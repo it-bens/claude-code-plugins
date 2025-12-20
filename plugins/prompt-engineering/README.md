@@ -1,0 +1,73 @@
+# Prompt Engineering Plugin
+
+Expert prompt engineering for Claude 4 models with production-ready templates.
+
+## Overview
+
+This plugin provides comprehensive guidance for creating, optimizing, and debugging high-performing prompts for Claude 4 models. It transforms requirements into production-ready prompts through evidence-based techniques and systematic optimization.
+
+## Skills
+
+### Prompt Engineering Lab
+
+**Triggers:** "create a prompt", "write a prompt", "optimize a prompt", "debug a prompt", "improve my prompt", "help with prompting", "build a prompt chain", "make a system prompt", "design a prompt"
+
+**Capabilities:**
+- Create new prompts from scratch for specific use cases
+- Optimize existing prompts for better performance
+- Debug problematic prompts and identify root causes
+- Build prompt chains for complex, multi-step workflows
+- Provide ready-to-copy prompts for Claude Web and Desktop
+
+## Usage
+
+Once installed, simply ask Claude Code for help with prompts:
+
+```
+"Help me create a prompt for code review"
+"Optimize this prompt: [your prompt]"
+"Debug why my prompt isn't working"
+"Build a prompt chain for research-to-report workflow"
+```
+
+## Claude Web Project
+
+This plugin includes data for a Claude Web project in the `project/` directory. Use these files for a Claude Web project to provide the same prompt engineering capabilities without requiring Claude Code.
+
+**Project files:**
+- `system-prompt.md` - System prompt embedding all skill knowledge
+- `title.txt` - Project title
+- `description.txt` - Project description
+
+The project wrapper allows users to simply describe what they need, and Claude handles the technical craft of creating effective prompts.
+
+## Documentation Sources
+
+The `docs/` directory contains the raw documentation files that were used to create the prompt-engineering skill. These files include comprehensive prompting guides and best practices from official Claude documentation:
+
+- Core prompting techniques (clarity, XML structure, system prompts, examples, prefilling, chain-of-thought)
+- Advanced strategies (prompt chaining, long context handling, output consistency, hallucination reduction)
+- Claude 4 model-specific optimization and best practices
+- Claude Code integration patterns and workflows
+
+These source materials are preserved for reference and can be used to update or extend the skill in the future.
+
+## Contents
+
+```
+prompt-engineering/
+├── .claude-plugin/
+│   └── plugin.json              # Plugin manifest
+├── docs/                        # Source documentation (15 files)
+├── skills/
+│   └── prompt-engineering/
+│       ├── SKILL.md             # Main skill definition
+│       ├── references/          # Skill-specific references
+│       └── examples/            # Ready-to-use templates
+├── project/                     # Claude Web project
+└── README.md
+```
+
+## License
+
+MIT

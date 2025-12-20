@@ -1,0 +1,20 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "it-bens-claude-marketplace",
+  "owner": {
+    "name": "Martin Bens",
+    "email": "martin.bens@it-bens.de"
+  },
+  "metadata": {
+    "description": "A personal collection of skills, agents, MCP servers, hooks, and LSPs to enhance Claude Code",
+    "version": "1.0.0",
+    "pluginRoot": "./plugins"
+  },
+  "plugins": [
+    {
+      "name": "prompt-engineering",
+      "source": "prompt-engineering",
+      "category": "productivity"
+    }
+  ]
+}

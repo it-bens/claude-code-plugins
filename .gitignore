@@ -1,0 +1,32 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Generated ZIP archives
+*.zip
+
+# Temporary files
+*.tmp
+*.temp
+.tmp/
+.temp/
+
+# Claude Code local settings
+.claude/
+
+# Logs
+*.log
+
+# Build output
+dist/
+build/
+out/
