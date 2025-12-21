@@ -15,6 +15,8 @@ Testing in Claude Web revealed the skill wasn't auto-activating. Root causes: sk
 
 ## [1.1.0] - 2025-12-21
 
+Testing revealed the skill would start executing the described task (e.g., gathering Reddit tooling requirements) instead of generating a reusable prompt artifact. Root cause: Phase 1 used generic software engineering terminology that primed Claude to analyze subject matter rather than scope the prompt.
+
 ### Changed
 
 - Renamed "Phase 1: Requirements Analysis" to "Phase 1: Prompt Scoping" to avoid software engineering terminology confusion
