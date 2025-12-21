@@ -1,4 +1,4 @@
-# IT-Bens Claude Code Marketplace
+# IT Martin Bens - Claude Code Marketplace
 
 A personal collection of skills, agents, MCP servers, hooks, and LSPs to enhance Claude Code with capabilities across software development and beyond.
 
@@ -69,9 +69,3 @@ This is a personal marketplace, but suggestions and feedback are welcome via Git
 ## License
 
 MIT
-
-## Author
-
-Martin Bens
-- GitHub: [it-bens](https://github.com/it-bens)
-- Email: martin.bens@it-bens.de
