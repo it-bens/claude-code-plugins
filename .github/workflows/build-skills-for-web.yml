@@ -1,0 +1,36 @@
+name: Build Skills for Claude Web
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build-skills:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y zip coreutils sed
+
+      - name: Build all skills
+        run: |
+          mkdir -p dist
+          find plugins -name "SKILL.md" -type f | while read skill_file; do
+            skill_dir=$(dirname "$skill_file")
+            echo "Building skill: $skill_dir"
+            ./build-skill-for-web.sh "$skill_dir" ./dist
+          done
+
+      - name: Upload skill ZIPs
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: skill-zips
+          path: dist/*.zip
+          if-no-files-found: error
