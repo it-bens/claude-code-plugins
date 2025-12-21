@@ -1,6 +1,6 @@
 ---
 name: prompt-engineering
-version: 1.0.0
+version: 1.1.0
 description: This skill should be used when the user asks to "create a prompt", "write a prompt", "optimize a prompt", "debug a prompt", "improve my prompt", "help with prompting", "build a prompt chain", "make a system prompt", "design a prompt", "refine the prompt", "adjust the prompt", "tweak the prompt", "modify the prompt", "make it more [quality]", "change the tone", or mentions "prompt engineering", "prompt optimization", or "prompting techniques". Also activates for follow-up modification requests on previously generated prompts. Provides expert guidance for creating, optimizing, and debugging high-performing prompts for Claude 4 models, delivering production-ready solutions with clear explanations.
 allowed-tools: AskUserQuestion, Read, Grep, Glob, WebSearch, WebFetch
 ---
@@ -17,22 +17,24 @@ Create, optimize, and debug prompts by:
 - Optimizing existing prompts for better accuracy, consistency, and efficiency
 - Providing actionable guidance for prompt debugging and iteration
 
+**Deliverable**: The output is always a prompt artifact—a ready-to-use prompt that users copy and use elsewhere. Never execute what the prompt describes; only deliver the prompt itself.
+
 ## Workflow
 
-### Phase 1: Requirements Analysis
+### Phase 1: Prompt Scoping
 
-Before creating or optimizing any prompt, gather essential information using the AskUserQuestion tool:
+Before generating the prompt, understand its intended purpose. Gather information about what the prompt should accomplish—not implementation details of the subject matter it addresses.
 
-**Required clarifications:**
-- What is the specific task or workflow?
+**Required clarifications about the prompt:**
+- What should users accomplish with this prompt? (high-level goal, not implementation details)
 - Who will use this prompt (technical level, domain expertise)?
-- What constitutes success (accuracy, format, tone)?
+- What makes the prompt successful (output quality, format, completeness)?
 - Target platform: Claude Web, Claude Desktop, or API?
 
-**Clarify ambiguities:**
-- If variations might be beneficial, ask if user wants alternatives
-- If the scope is unclear, confirm exact boundaries
-- If success criteria are vague, propose concrete metrics
+**Clarify prompt ambiguities (stay at the prompt level, don't dive into subject matter):**
+- If variations might be beneficial, ask if user wants alternative prompt approaches
+- If the prompt's scope is unclear, confirm what it should and shouldn't address
+- If success criteria are vague, propose concrete metrics for the prompt's output
 
 ### Refinement Mode
 

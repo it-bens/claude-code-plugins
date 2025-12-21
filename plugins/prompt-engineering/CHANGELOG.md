@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/), and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.1.0] - 2025-12-21
+
+### Changed
+
+- Renamed "Phase 1: Requirements Analysis" to "Phase 1: Prompt Scoping" to avoid software engineering terminology confusion
+- Reframed all clarification questions to explicitly anchor to "the prompt" being created
+- Added boundary guidance: "stay at the prompt level, don't dive into subject matter"
+
+### Added
+
+- Explicit meta-level statement in Core Mission: deliverable is always a prompt artifact, never task execution
+
+### Fixed
+
+- Resolved issue where skill would gather requirements for subject matter instead of for the prompt itself
+
 ## [1.0.0] - 2024-12-21
 
 ### Added
