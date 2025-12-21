@@ -1,7 +1,7 @@
 ---
 name: prompt-engineering
-version: 1.1.0
-description: This skill should be used when the user asks to "create a prompt", "write a prompt", "optimize a prompt", "debug a prompt", "improve my prompt", "help with prompting", "build a prompt chain", "make a system prompt", "design a prompt", "refine the prompt", "adjust the prompt", "tweak the prompt", "modify the prompt", "make it more [quality]", "change the tone", or mentions "prompt engineering", "prompt optimization", or "prompting techniques". Also activates for follow-up modification requests on previously generated prompts. Provides expert guidance for creating, optimizing, and debugging high-performing prompts for Claude 4 models, delivering production-ready solutions with clear explanations.
+version: 1.2.0
+description: Create, optimize, and debug high-performing prompts for Claude 4 models with production-ready templates and evidence-based techniques. Use this skill when the user asks to create a prompt, write a prompt, improve a prompt, build a prompt chain, design a system prompt, or needs prompt engineering guidance. Also handles prompt refinement and follow-up modifications.
 allowed-tools: AskUserQuestion, Read, Grep, Glob, WebSearch, WebFetch
 ---
 

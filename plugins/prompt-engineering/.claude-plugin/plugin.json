@@ -1,6 +1,6 @@
 {
   "name": "prompt-engineering",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Expert prompt engineering for Claude 4 models with production-ready templates",
   "author": {
     "name": "Martin Bens",
