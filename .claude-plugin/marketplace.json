@@ -13,8 +13,13 @@
   "plugins": [
     {
       "name": "prompt-engineering",
-      "source": "prompt-engineering",
+      "source": "./plugins/prompt-engineering",
       "category": "productivity"
+    },
+    {
+      "name": "python-plan-optimizer",
+      "source": "./plugins/python-plan-optimizer",
+      "category": "development"
     }
   ]
 }

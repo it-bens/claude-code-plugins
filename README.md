@@ -21,6 +21,7 @@ Then browse and install plugins:
 | Plugin | Description | Category |
 |--------|-------------|----------|
 | [prompt-engineering](./plugins/prompt-engineering/) | Expert prompt engineering for Claude 4 models with production-ready templates | Productivity |
+| [python-plan-optimizer](./plugins/python-plan-optimizer/) | Analyze Python code in planning documents for design principles and improvement opportunities | Development |
 
 ## Structure
 
@@ -29,16 +30,21 @@ claude-code-plugins/
 ├── .claude-plugin/
 │   └── marketplace.json     # Marketplace manifest (references plugins)
 ├── plugins/
-│   └── prompt-engineering/  # Prompt engineering plugin
+│   ├── prompt-engineering/  # Prompt engineering plugin
+│   │   ├── .claude-plugin/
+│   │   │   └── plugin.json
+│   │   ├── skills/
+│   │   ├── docs/
+│   │   └── project/
+│   └── python-plan-optimizer/  # Python plan optimizer plugin
 │       ├── .claude-plugin/
-│       │   └── plugin.json  # Plugin manifest (authoritative metadata)
-│       ├── skills/          # Claude Code skills
-│       │   └── prompt-engineering/
-│       │       ├── SKILL.md
-│       │       ├── references/
-│       │       └── examples/
-│       ├── docs/            # Prompting documentation
-│       └── project/         # Claude Web project files
+│       │   └── plugin.json
+│       ├── agents/
+│       │   └── python-plan-optimizer.md
+│       └── skills/
+│           └── python-plan-optimization/
+│               ├── SKILL.md
+│               └── references/
 ├── build-skill-for-web.sh   # Build script for Claude Web
 └── README.md
 ```

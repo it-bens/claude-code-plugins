@@ -22,15 +22,15 @@ For ALL plugin and skill development, use the plugin-dev tools instead of manual
 
 ## Project-Specific Context
 
-### This Marketplace Uses `strict: false`
+### Plugin Registration
 
-All plugin metadata is centralized in `marketplace.json`. Individual plugins do NOT have their own `plugin.json` files. When adding a new plugin, register it in `.claude-plugin/marketplace.json`:
+Each plugin has its own `.claude-plugin/plugin.json` for metadata. Plugins are also registered in the marketplace at `.claude-plugin/marketplace.json`:
 
 ```json
 {
   "name": "plugin-name",
   "source": "plugin-name",
-  "strict": false
+  "category": "development"
 }
 ```
 
