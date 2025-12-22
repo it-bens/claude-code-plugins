@@ -2,7 +2,7 @@
 name: python-plan-optimizer
 description: |
   Analyzes Python code examples in planning documents (PLAN.md, design.md, architecture.md).
-  Use when requests involve reviewing Python code quality, identifying code smells, or checking design principles.
+  Use when requests involve optimizing, reviewing, or analyzing Python code quality in planning documents.
 
   <example>
   Context: User wants code review for a planning document

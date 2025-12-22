@@ -2,9 +2,8 @@
 name: python-plan-optimization
 version: 1.0.0
 description: |
-  Analyze Python code examples in planning documents for quality, design principles, and improvement opportunities.
-  Use when reviewing markdown files (PLAN.md, design.md, architecture.md) with Python code blocks.
-  Provides read-only analysis with a 5-phase workflow: Discovery, Assessment, Planning, Recommendations, Report.
+  5-phase read-only analysis workflow for Python code in markdown documents.
+  Detects design principle violations, code smells, and suggests modern Python improvements.
 allowed-tools: Read, Glob, Grep
 ---
 

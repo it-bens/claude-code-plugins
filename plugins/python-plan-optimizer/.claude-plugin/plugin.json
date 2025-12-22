@@ -1,6 +1,6 @@
 {
   "name": "python-plan-optimizer",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Optimize Python code examples in planning documents using SOLID, DRY, KISS, YAGNI principles and modern Python practices",
   "author": {
     "name": "Martin Bens",
