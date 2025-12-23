@@ -1,6 +1,6 @@
 ---
 name: python-plan-optimization
-version: 1.2.0
+version: 1.2.1
 description: |
   5-phase read-only analysis workflow for Python code in markdown documents.
   Detects design principle violations, code smells, and suggests modern Python improvements.
@@ -8,9 +8,9 @@ description: |
 allowed-tools: Read, Glob, Grep, WebSearch, WebFetch
 ---
 
-# Python Plan Analysis
+# Analysis Workflow
 
-Expert Python code review service for planning documents. Analyze code blocks in design documents to identify improvement opportunities using established design principles, modern Python practices, and systematic code smell detection.
+Analyzes code blocks in design documents to identify improvement opportunities using established design principles, modern Python practices, and systematic code smell detection.
 
 ## Core Mission
 

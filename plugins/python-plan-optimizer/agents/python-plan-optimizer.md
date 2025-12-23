@@ -47,6 +47,13 @@ description: |
   <commentary>Multiple files are analyzed and results aggregated.</commentary>
   </example>
 
+  <example>
+  Context: User wants to optimize Python code in planning documents
+  user: "Optimize the Python code in my plan directory"
+  assistant: "I'll use the python-plan-optimizer agent to analyze and suggest optimizations."
+  <commentary>Optimize triggers read-only analysis with improvement suggestions.</commentary>
+  </example>
+
   Read-only analysis - does NOT modify any files.
 tools: Skill, Read, Grep, Glob, WebSearch, WebFetch
 skills: python-plan-optimizer:python-plan-optimization

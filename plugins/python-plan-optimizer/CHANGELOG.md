@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/), and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.2.1] - 2025-12-23
+
+### Fixed
+
+- Agent description now includes "optimize" example for better invocation matching
+- Skill body no longer contains service language that competed with agent
+
+**Root cause:** The skill's body content (title "Python Plan Analysis", phrase "Expert Python code review service") acted as competing trigger language. This caused the skill to be invoked directly instead of the agent.
+
 ## [1.2.0] - 2025-12-23
 
 ### Added
