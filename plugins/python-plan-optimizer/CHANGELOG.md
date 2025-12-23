@@ -4,6 +4,30 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/), and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.2.0] - 2025-12-23
+
+### Added
+
+- **Multi-file support** - Analyze multiple documents via directories or file lists
+- **File discovery** - Agent uses Glob to find `.md` files and Grep to filter for Python code blocks
+- **Cross-document analysis** - Identifies patterns and inconsistencies across documents
+- **Batch trigger examples** in agent frontmatter for directory and file list invocations
+
+### Changed
+
+- **List-first design** - All inputs resolve to a document list (even single files become a list of one)
+- Agent resolves input to document list, validates each, invokes skill once
+- Skill Phase 1 changed from "Read the planning document" to "For each document"
+- Phase 5 uses single report template that works for 1 or N documents
+- Output contract uses array structure: `documents: [...]` with per-document status
+
+**Root cause of original issue:** Singular language throughout:
+- Agent validated "Document Path" (singular)
+- Skill said "Read the planning document" (singular)
+- Output assumed one document
+
+**Solution approach:** Change singular to iterative language. No mode detection needed - treat everything as a list. A single file is just a list of one document.
+
 ## [1.1.0] - 2025-12-22
 
 ### Added

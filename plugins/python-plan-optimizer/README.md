@@ -34,6 +34,23 @@ What Python improvements could be made in my design doc?
 
 The `python-plan-optimizer` agent will be automatically invoked.
 
+### Batch Analysis
+
+Analyze multiple files at once by specifying a directory or file list:
+
+```
+Analyze all the Python code in my ./plan/ directory
+Review PLAN.md, design.md, and architecture.md
+Check all markdown files in ./docs/ for code smells
+```
+
+**Batch mode features:**
+- Discovers all `.md` files in a directory
+- Filters to only files containing Python code blocks
+- Generates per-document analysis plus aggregate summary
+- Identifies cross-document patterns and inconsistencies
+- Reports skipped/failed documents with reasons
+
 ## Workflow
 
 The plugin follows a 5-phase analysis workflow:

@@ -42,35 +42,42 @@ Reference files provide progressive disclosure:
 
 ## Agent-Skill Pattern
 
-The thin agent wrapper pattern separates concerns:
+The thin agent wrapper pattern separates concerns.
+
+**Design principle:** All inputs resolve to a document list (even if it's a list of one). No mode detection needed - the same workflow handles 1 or N documents.
 
 ```
-User Request
+User Request (file, directory, or list)
     ↓
 AGENT: python-plan-optimizer
-    ├─ Validate: File exists? Is markdown? Has Python?
-    ├─ If invalid → Return FAILED/SKIPPED immediately
-    └─ If valid → Invoke Skill
+    ├─ Resolve input to document list:
+    │   ├─ Single file → [file]
+    │   ├─ Directory → Glob **/*.md → filter has Python
+    │   └─ File list → parse paths
+    ├─ Validate each file
+    ├─ If no valid documents → Return SKIPPED/FAILED
+    └─ Invoke Skill
                     ↓
 SKILL: python-plan-optimization (READ-ONLY)
-    ├─ Phase 1: Discovery (+ identify architectural decisions)
+    ├─ Phase 1: Discovery (for each document)
     ├─ Phase 2: Assessment (uses design-principles.md, code-smells.md)
     ├─ Phase 3: Planning (filter conflicting suggestions)
     ├─ Phase 4: Recommendations (uses modern-python.md)
-    └─ Phase 5: Report (uses behavioral-compatibility.md)
+    └─ Phase 5: Report (summary + per-document findings)
                     ↓
-Output: Analysis Report with Recommendations (NO FILES MODIFIED)
+Output: Analysis Report (NO FILES MODIFIED)
 ```
 
 **Agent responsibilities:**
-- Input validation only
-- Immediate failure for invalid inputs
+- Resolve input to document list
+- File discovery (for directories)
+- Validate each document
 - Structured output contract
 
 **Skill responsibilities:**
 - All domain knowledge
-- 5-phase workflow execution
-- Output generation
+- 5-phase workflow (iterates over documents)
+- Report generation
 
 ## Extending the Plugin
 

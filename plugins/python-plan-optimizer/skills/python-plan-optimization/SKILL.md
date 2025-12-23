@@ -1,9 +1,10 @@
 ---
 name: python-plan-optimization
-version: 1.1.0
+version: 1.2.0
 description: |
   5-phase read-only analysis workflow for Python code in markdown documents.
   Detects design principle violations, code smells, and suggests modern Python improvements.
+  Processes one or more documents, generating per-document analysis with summary.
 allowed-tools: Read, Glob, Grep, WebSearch, WebFetch
 ---
 
@@ -20,7 +21,7 @@ Analyze Python code in planning documents to identify improvement opportunities 
 4. **Respecting explicit architectural decisions and chosen tooling**
 5. Presenting findings as opportunities, not requirements
 
-**Deliverable**: Analysis report with recommendations (document is NOT modified).
+**Deliverable**: Analysis report with recommendations (documents are NOT modified).
 
 ## Constraints
 
@@ -58,13 +59,22 @@ Analyze Python code in planning documents to identify improvement opportunities 
 
 Understand the codebase context and identify explicit decisions.
 
-**Actions:**
-1. Read the planning document completely
+**For each document:**
+1. Read the document completely
 2. Identify all Python code blocks (fenced with ``` or indented)
 3. Catalog the purpose of each code example
 4. Note dependencies between code examples
 5. Identify the Python version targeted (assume 3.10+ unless specified)
 6. **Identify explicit architectural decisions and tooling choices**
+
+**Error Handling:**
+- If a document cannot be read: mark as failed, record reason, continue to next
+- If no code blocks found: mark as skipped, record reason, continue to next
+
+**Cross-Document Tracking (when multiple documents):**
+- Note shared patterns across documents
+- Track common dependencies
+- Flag potential inconsistencies between documents
 
 **Discovery Questions:**
 - What is the purpose of this code?
@@ -72,6 +82,7 @@ Understand the codebase context and identify explicit decisions.
 - Are there constraints mentioned in surrounding text?
 - How do code blocks relate to each other?
 - **What explicit decisions have been made and why?**
+- Are there patterns shared across documents?
 
 ### Phase 2: Assessment
 
@@ -164,25 +175,41 @@ Generate comprehensive analysis report.
 ```markdown
 ## Analysis Report
 
-**Document:** [filename]
+### Summary
+
+| Metric | Count |
+|--------|-------|
+| Documents Analyzed | [count] |
+| Documents Skipped | [count] |
+| Total Code Blocks | [count] |
+| Total Issues Found | [count] |
+| Total Recommendations | [count] |
+
+### Severity Distribution
+
+| Severity | Count |
+|----------|-------|
+| Critical | [n] |
+| High | [n] |
+| Medium | [n] |
+| Low | [n] |
+
+---
+
+## Document: [path/to/document.md]
+
+**Status:** SUCCESS|PARTIAL|SKIPPED|FAILED
 **Code Blocks Analyzed:** [count]
 **Issues Found:** [count]
-**Recommendations:** [count]
 **Architectural Decisions Respected:** [count]
 
-### Findings by Severity
-- Critical: [count] opportunities
-- High: [count] opportunities
-- Medium: [count] opportunities
-- Low: [count] opportunities
+### Architectural Context
 
-## Architectural Context
+[List of explicit decisions recognized in this document]
 
-[List of explicit decisions recognized in the document]
+### Code Block Analysis
 
-## Code Block Analysis
-
-### Block 1: [description]
+#### Block 1: [description]
 
 **File/Stage:** [explicit identifier - e.g., "Stage 2: execute_search"]
 
@@ -207,14 +234,24 @@ Generate comprehensive analysis report.
 
 ---
 
-**Note:** These suggestions are for consideration. The original code remains unchanged.
+[Repeat for additional documents...]
 
-## Summary
+---
 
-[Key opportunities identified, respecting stated architectural decisions]
+## Cross-Document Observations
+
+[If multiple documents: patterns, inconsistencies, shared opportunities]
+
+---
 
 **Important:** This is a read-only analysis. No files have been modified.
 ```
+
+**Report Guidelines:**
+- Present summary first for quick overview
+- Generate per-document sections with findings
+- Note cross-document patterns when analyzing multiple files
+- Use collapsible sections for lengthy findings if needed
 
 ## Respecting Architectural Decisions
 
@@ -281,9 +318,10 @@ Consult for detailed guidance:
 ## Success Metrics
 
 Analysis succeeds when:
-- All code blocks are analyzed
+- All provided documents are processed (or errors reported)
+- Each document's code blocks are analyzed
 - Explicit architectural decisions are recognized and respected
 - Findings are presented as opportunities, not mandates
 - Suggested alternatives are practical within stated constraints
 - Report is comprehensive but actionable
-- **Document is NOT modified**
+- **No documents are modified**
