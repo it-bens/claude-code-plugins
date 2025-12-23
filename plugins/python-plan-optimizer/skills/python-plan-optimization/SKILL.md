@@ -1,6 +1,6 @@
 ---
 name: python-plan-optimization
-version: 1.2.1
+version: 1.3.0
 description: |
   5-phase read-only analysis workflow for Python code in markdown documents.
   Detects design principle violations, code smells, and suggests modern Python improvements.
@@ -35,6 +35,7 @@ Analyze Python code in planning documents to identify improvement opportunities 
 - Chosen tooling and library decisions with stated rationale
 - Application-level design choices
 - External dependencies and integrations as documented
+- Intentional placeholders and incomplete sections (`# TODO`, `# ...`, stub implementations)
 
 **MAY Suggest (as opportunities):**
 - Internal code organization improvements
@@ -48,9 +49,9 @@ Analyze Python code in planning documents to identify improvement opportunities 
 - Report issues when a solution already exists in surrounding context (±20 lines)
 - Conflate patterns from different code blocks/stages
 - Round up metrics (e.g., claiming "100+ lines" for a 95-line function)
-- Recommend specific library versions without WebSearch verification
-- Recommend patterns for time-dependent data (age_days, timestamps) that would cache stale values
-- Suggest type wrappers (enums, classes) when SDK already provides `Literal[...]` types
+- Recommend specific library APIs (imports, exceptions, classes, attributes, behavior) without WebSearch verification—package splits are common
+- Recommend patterns for time-dependent data (age_days, timestamps) that would cache stale values (including `@cached_property`, `@computed_field`, memoization)
+- Suggest type wrappers (enums, classes) when SDK already provides `Literal[...]` types, or over-constrain generics breaking valid use cases
 - Cite features from unreleased Python versions
 
 ## 5-Phase Workflow
@@ -93,7 +94,7 @@ Evaluate code against design principles and identify issues.
 2. Verify the problem exists in the quoted code
 3. Check ±20 lines for an existing solution
 4. Confirm you're analyzing the correct file/stage
-5. For version recommendations: verify via WebSearch first
+5. For third-party library claims: verify via WebSearch first
 
 **If ANY verification step fails, do NOT include the finding.**
 
@@ -288,6 +289,18 @@ When suggesting changes, note potential behavioral impacts:
 | 5 | Would public attributes be affected? |
 
 See `references/behavioral-compatibility.md` for detailed guidance.
+
+## Concurrency Verification
+
+These terms are NOT interchangeable—verify via WebSearch before making claims:
+
+| Term | Meaning | Example |
+|------|---------|---------|
+| Async-safe | Safe for concurrent coroutines (single thread) | `asyncio.Lock()` |
+| Thread-safe | Safe for concurrent threads | `threading.Lock()` |
+| Process-safe | Safe across worker processes | Redis, database, file locks |
+
+In-memory caches and locks do NOT provide safety across worker processes (e.g., uvicorn/gunicorn workers).
 
 ## When to Ask for Clarification
 

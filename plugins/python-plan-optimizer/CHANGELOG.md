@@ -4,6 +4,30 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/), and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.3.0] - 2025-12-23
+
+### Changed
+
+- **NEVER constraint broadened** - "library versions" → "library APIs (imports, exceptions, classes, attributes, behavior)"—package splits are common
+- **Caching mechanisms explicit** - Added `@cached_property`, `@computed_field`, memoization to stale value warning
+- **Generic over-constraining** - Added warning against constraining generics that break valid use cases
+- **Verification scope broadened** - Phase 2 step 5 now covers all third-party library claims, not just versions
+- **Placeholders recognized** - MUST Respect list now includes intentional placeholders (`# TODO`, `# ...`, stubs)
+
+### Added
+
+- **Concurrency Verification section** - Distinguishes async-safe, thread-safe, and process-safe with examples
+- **Decorator Evaluation Timing table** in modern-python.md - Shows when `@property`, `@cached_property`, `@computed_field` execute
+
+**Root cause:** Investigation of 11 invalid claims revealed 5 constraint gaps:
+1. Overly narrow verification scope (only "versions", not all API claims)
+2. Implicit knowledge assumed (caching behavior, concurrency models, evaluation timing)
+3. Missing concept distinctions (async-safe ≠ thread-safe ≠ process-safe)
+4. Planning document conventions not recognized (placeholders are intentional)
+5. Only one direction covered (redundant wrappers warned, over-constraining not)
+
+Examples: `asyncpraw.exceptions` vs `asyncprawcore`, `asyncio.Lock()` claimed "thread-safe", `@computed_field` recommended for dynamic data, `# TODO` flagged as defect, `TypeVar("T", bound=BaseModel)` breaking `Result[str]`
+
 ## [1.2.1] - 2025-12-23
 
 ### Fixed

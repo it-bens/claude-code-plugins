@@ -184,6 +184,31 @@ class Point:
     y: float
 ```
 
+## Decorator Evaluation Timing
+
+Understanding when decorators execute prevents recommending caching for dynamic data:
+
+| Decorator | When Evaluated | Caches? | Use For |
+|-----------|----------------|---------|---------|
+| `@property` | Every access | No | Dynamic/time-dependent values |
+| `@cached_property` | First access only | Yes | Expensive static computations |
+| `@computed_field` | Serialization time | No* | Pydantic derived fields |
+
+*`@computed_field` combined with `@cached_property` DOES cache—avoid for time-dependent data.
+
+**Anti-pattern:**
+```python
+# BAD: Caches on first access, becomes stale
+@cached_property
+def age_days(self) -> int:
+    return (datetime.now() - self.created_at).days
+
+# GOOD: Recalculates on every access
+@property
+def age_days(self) -> int:
+    return (datetime.now() - self.created_at).days
+```
+
 ## Pattern Matching (Python 3.10+)
 
 ### Basic Patterns
