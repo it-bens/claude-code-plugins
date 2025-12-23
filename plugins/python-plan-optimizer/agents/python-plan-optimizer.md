@@ -33,7 +33,7 @@ description: |
   </example>
 
   Read-only analysis - does NOT modify any files.
-tools: Skill, Read, Grep, Glob
+tools: Skill, Read, Grep, Glob, WebSearch, WebFetch
 skills: python-plan-optimizer:python-plan-optimization
 model: sonnet
 color: blue

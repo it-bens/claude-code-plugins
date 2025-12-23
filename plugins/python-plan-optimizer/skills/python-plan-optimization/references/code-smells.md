@@ -248,6 +248,35 @@ class Point:
         return Point(self.x * factor, self.y * factor)
 ```
 
+### Mutable Default Arguments
+
+**Detection:**
+- Function parameters with default values of `[]`, `{}`, or other mutable types
+- Unexpected behavior when function called multiple times
+- State persisting between function calls
+
+**Refactoring: Use None with Factory**
+
+```python
+# Before - DANGEROUS
+def add_item(item, items=[]):
+    items.append(item)
+    return items
+
+# Calling add_item("a") then add_item("b") returns ["a", "b"]!
+
+# After - SAFE
+def add_item(item: str, items: list[str] | None = None) -> list[str]:
+    if items is None:
+        items = []
+    items.append(item)
+    return items
+```
+
+**Why This Happens:**
+Default argument values are evaluated once at function definition time, not each call.
+Mutable objects (lists, dicts, sets) persist between calls, causing unexpected behavior.
+
 ## Object-Orientation Abusers
 
 Incorrect or incomplete application of OO principles.

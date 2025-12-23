@@ -1,10 +1,10 @@
 ---
 name: python-plan-optimization
-version: 1.0.0
+version: 1.1.0
 description: |
   5-phase read-only analysis workflow for Python code in markdown documents.
   Detects design principle violations, code smells, and suggests modern Python improvements.
-allowed-tools: Read, Glob, Grep
+allowed-tools: Read, Glob, Grep, WebSearch, WebFetch
 ---
 
 # Python Plan Analysis
@@ -42,6 +42,16 @@ Analyze Python code in planning documents to identify improvement opportunities 
 - Modern Python idiom adoption
 - Type annotation additions
 
+**NEVER (will cause analysis failure):**
+- Make claims about code without quoting the exact code (minimum 3 lines with line numbers)
+- Report issues when a solution already exists in surrounding context (±20 lines)
+- Conflate patterns from different code blocks/stages
+- Round up metrics (e.g., claiming "100+ lines" for a 95-line function)
+- Recommend specific library versions without WebSearch verification
+- Recommend patterns for time-dependent data (age_days, timestamps) that would cache stale values
+- Suggest type wrappers (enums, classes) when SDK already provides `Literal[...]` types
+- Cite features from unreleased Python versions
+
 ## 5-Phase Workflow
 
 ### Phase 1: Discovery
@@ -66,6 +76,15 @@ Understand the codebase context and identify explicit decisions.
 ### Phase 2: Assessment
 
 Evaluate code against design principles and identify issues.
+
+**For EACH potential finding, you MUST:**
+1. Quote the exact code (minimum 3 lines, include line numbers)
+2. Verify the problem exists in the quoted code
+3. Check ±20 lines for an existing solution
+4. Confirm you're analyzing the correct file/stage
+5. For version recommendations: verify via WebSearch first
+
+**If ANY verification step fails, do NOT include the finding.**
 
 **Principle Checklist:**
 
@@ -165,21 +184,30 @@ Generate comprehensive analysis report.
 
 ### Block 1: [description]
 
+**File/Stage:** [explicit identifier - e.g., "Stage 2: execute_search"]
+
 **Architectural Context:**
 [Decisions that apply to this block - these are respected]
 
-**Findings:**
-| Issue | Severity | Category |
-|-------|----------|----------|
+**Finding 1:** [issue title]
 
-**Suggested Improvements:**
-[Code examples showing alternatives - NOT applied]
+**Code (lines X-Y):**
+```python
+# Exact code being critiqued (minimum 3 lines)
+```
+
+**Issue:** [What the problem is]
+
+**Suggested Improvement:**
+```python
+# Recommended alternative
+```
+
+**Rationale:** [Why this could help]
+
+---
 
 **Note:** These suggestions are for consideration. The original code remains unchanged.
-
-### Recommendation Rationale
-1. [Suggestion]: [Why this could help]
-2. [Suggestion]: [Why this could help]
 
 ## Summary
 

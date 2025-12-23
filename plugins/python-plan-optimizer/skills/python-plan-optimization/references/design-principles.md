@@ -441,3 +441,60 @@ class DataProcessor:
 - Business logic from I/O
 - Data access from business rules
 - Presentation from domain logic
+
+## Library/SDK Pattern Respect
+
+**Before suggesting abstractions, check if the library already provides them.**
+
+This principle prevents recommending redundant type wrappers, custom enums, or abstractions when the SDK/library already provides equivalent type safety.
+
+### Anti-Pattern: Redundant Type Wrappers
+
+```python
+# DON'T recommend this:
+from enum import Enum
+
+class ModelTier(Enum):
+    SONNET = "sonnet"
+    OPUS = "opus"
+    HAIKU = "haiku"
+
+config = AgentConfig(model=ModelTier.SONNET.value)
+
+# When the SDK already defines:
+from typing import Literal
+
+ModelType = Literal["sonnet", "opus", "haiku", "inherit"]
+config = AgentConfig(model="sonnet")  # Type-safe as-is
+```
+
+**Rule:** If a library uses `Literal[...]` for a field, an enum wrapper adds no type safety and creates maintenance burden.
+
+### Verification Steps
+
+Before recommending type abstractions:
+
+1. **Check import statements** for SDK types
+2. **Look for existing type annotations** from libraries
+3. **Consult library documentation** before suggesting wrappers
+4. **Use WebSearch** to verify current SDK type patterns
+
+### When Wrappers ARE Appropriate
+
+Custom wrappers may be appropriate when:
+- The SDK lacks type annotations entirely
+- You need to add domain-specific validation
+- The SDK uses `Any` or overly permissive types
+- You're abstracting over multiple libraries
+
+### Detection Pattern
+
+Before recommending:
+```python
+# Suggesting an enum for X
+```
+
+Ask yourself:
+- Does the library already define types for X?
+- Would my enum duplicate existing `Literal[...]` definitions?
+- Am I adding value or just adding a layer?
