@@ -274,10 +274,15 @@ class UserRepository:
 **Definition:** Every piece of knowledge should have a single, unambiguous representation.
 
 **Detection Patterns:**
-- Same code block appears in multiple places
-- Similar logic with minor variations
+- Same code block appears in 3+ places (2 occurrences may be acceptable locality)
+- Similar logic with minor variations across 3+ locations
 - Copy-pasted code with different variable names
 - Multiple sources of truth for same data
+
+**When NOT to apply DRY:**
+- Only 2 occurrences with clear locality
+- Extraction would create single-use abstraction
+- Duplication is syntactic, not knowledge duplication
 
 **Refactoring Strategies:**
 

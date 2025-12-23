@@ -4,6 +4,31 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/), and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.4.0] - 2025-12-23
+
+### Changed
+
+- **Verification requires flow tracing** - "Verify problem exists" → "Trace data flow to verify incorrect behavior"
+- **WebSearch requires confirmation** - "verify via WebSearch" → "only include if documentation confirms it exists"
+- **Line counts must distinguish logic** - Report logic lines separately (e.g., "60 logic, 95 total")
+- **SRP detection precise** - "Multiple responsibilities" → "2+ unrelated reasons to change"
+- **DRY threshold explicit** - Requires 3+ occurrences; 2 may be acceptable locality
+- **Severity context-aware** - Added "Context Requirement" column and pre-assignment questions
+- **Long Method defined** - "~20 lines of code" → "~20 lines of logic"
+
+### Added
+
+- **DRY "when NOT to apply" guidance** - Prevents over-application
+
+**Root cause:** Investigation of 10 invalid claims revealed vague/incorrect instructions:
+1. WebSearch didn't require positive confirmation (fabricated APIs)
+2. Severity was context-free (context-blind severity)
+3. "Verify problem exists" accepted pattern matches (over-generalized principles)
+4. "Lines of code" undefined (inflated metrics)
+5. DRY/SRP lacked thresholds (over-application of principles)
+
+Examples: `RateLimitError` claimed without verification, "Critical" severity for single-worker app, `hash()` instability claimed as bug without flow trace, "95 lines" when 60 were logic, DRY violation for 2 occurrences
+
 ## [1.3.0] - 2025-12-23
 
 ### Changed

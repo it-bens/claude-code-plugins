@@ -1,6 +1,6 @@
 ---
 name: python-plan-optimization
-version: 1.3.0
+version: 1.4.0
 description: |
   5-phase read-only analysis workflow for Python code in markdown documents.
   Detects design principle violations, code smells, and suggests modern Python improvements.
@@ -48,7 +48,7 @@ Analyze Python code in planning documents to identify improvement opportunities 
 - Make claims about code without quoting the exact code (minimum 3 lines with line numbers)
 - Report issues when a solution already exists in surrounding context (±20 lines)
 - Conflate patterns from different code blocks/stages
-- Round up metrics (e.g., claiming "100+ lines" for a 95-line function)
+- Misrepresent line counts—report logic lines separately from total (e.g., "60 lines of logic, 95 total" not "~95 lines")
 - Recommend specific library APIs (imports, exceptions, classes, attributes, behavior) without WebSearch verification—package splits are common
 - Recommend patterns for time-dependent data (age_days, timestamps) that would cache stale values (including `@cached_property`, `@computed_field`, memoization)
 - Suggest type wrappers (enums, classes) when SDK already provides `Literal[...]` types, or over-constrain generics breaking valid use cases
@@ -91,10 +91,10 @@ Evaluate code against design principles and identify issues.
 
 **For EACH potential finding, you MUST:**
 1. Quote the exact code (minimum 3 lines, include line numbers)
-2. Verify the problem exists in the quoted code
+2. Trace data flow to verify the problem causes incorrect behavior (pattern match alone is insufficient)
 3. Check ±20 lines for an existing solution
 4. Confirm you're analyzing the correct file/stage
-5. For third-party library claims: verify via WebSearch first
+5. For third-party library claims: WebSearch the exact API name—only include if documentation confirms it exists (no confirmation = do not claim)
 
 **If ANY verification step fails, do NOT include the finding.**
 
@@ -102,12 +102,12 @@ Evaluate code against design principles and identify issues.
 
 | Principle | Check For | Quick Fix |
 |-----------|-----------|-----------|
-| SRP | Multiple responsibilities in one class/function | Extract class/function |
+| SRP | Class has 2+ unrelated reasons to change (multiple methods ≠ multiple responsibilities) | Extract class/function |
 | OCP | Modification required for extension | Use abstraction/strategy |
 | LSP | Substitutability violations | Fix hierarchy design |
 | ISP | Implementing unused methods | Split interface |
 | DIP | Direct concrete dependencies | Inject abstractions |
-| DRY | Repeated code patterns | Extract shared logic |
+| DRY | Same logic repeated 3+ times (2 occurrences may be acceptable locality) | Extract shared logic |
 | KISS | Unnecessary complexity | Simplify approach |
 | YAGNI | Speculative features | Remove unused code |
 
@@ -135,12 +135,17 @@ Prioritize findings and organize recommendations.
 
 **Severity Assessment:**
 
-| Severity | Description | Examples |
-|----------|-------------|----------|
-| Critical | Architectural issues, major violations | God class, circular dependencies |
-| High | Significant principle violations | SRP violations, heavy duplication |
-| Medium | Code smells affecting maintainability | Long methods, primitive obsession |
-| Low | Style issues, minor improvements | Missing type hints, naming |
+| Severity | Description | Context Requirement |
+|----------|-------------|---------------------|
+| Critical | Demonstrated architectural impact | Issue manifests in described/default deployment |
+| High | Significant principle violations | Impact traceable in actual code flow |
+| Medium | Code smells affecting maintainability | Would cause issues under normal usage |
+| Low | Style issues, minor improvements | Improvement is clear, no risk |
+
+**Before assigning severity, ask:**
+1. Under what deployment conditions does this issue actually manifest?
+2. Is this demonstrated in the code flow, or only theoretical?
+3. Does fixing this actually improve the code, or just satisfy a pattern?
 
 ### Phase 4: Recommendations
 

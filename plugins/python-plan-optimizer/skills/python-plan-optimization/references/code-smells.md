@@ -9,7 +9,7 @@ Code that has grown excessively large and difficult to work with.
 ### Long Method
 
 **Detection:**
-- Function exceeds ~20 lines of code
+- Function exceeds ~20 lines of logic (blank lines, comments, docstrings, type-only lines don't count)
 - Multiple levels of indentation (3+)
 - Comments separating logical sections
 - Difficulty naming the function succinctly
