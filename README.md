@@ -79,6 +79,18 @@ Each plugin's `plugin.json` uses paths relative to its own location. Component d
 
 Skills in this marketplace use the `allowed-tools` frontmatter field to restrict tool access in Claude Code. However, this field is **only supported in Claude Code** and must be removed for Claude Web compatibility.
 
+### Opt-in with `.claude-web` Marker
+
+Not all skills are suitable for Claude Web. To enable a skill for web builds, add an empty `.claude-web` file to the skill directory:
+
+```bash
+touch ./plugins/<plugin>/skills/<skill>/.claude-web
+```
+
+The GitHub workflow automatically builds ZIP archives only for skills with this marker file.
+
+### Manual Build
+
 The `build-skill-for-web.sh` script creates Claude Web-compatible ZIP archives by stripping Claude Code-specific fields:
 
 ```bash
