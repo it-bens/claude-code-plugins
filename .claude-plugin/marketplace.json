@@ -25,6 +25,11 @@
       "name": "native-tools-enforcer",
       "source": "./plugins/native-tools-enforcer",
       "category": "guardrails"
+    },
+    {
+      "name": "tandoor-recipe-converter",
+      "source": "./plugins/tandoor-recipe-converter",
+      "category": "productivity"
     }
   ]
 }
