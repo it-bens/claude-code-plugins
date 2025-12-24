@@ -30,3 +30,6 @@
 dist/
 build/
 out/
+
+# BATS testing framework (installed locally via .github/scripts/setup-bats.sh)
+.bats/
