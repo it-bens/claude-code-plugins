@@ -29,23 +29,21 @@ Then browse and install plugins:
 ```
 claude-code-plugins/
 ├── .claude-plugin/
-│   └── marketplace.json        # Marketplace manifest (references plugins)
+│   └── marketplace.json        # Marketplace registry
 ├── .github/
 │   └── scripts/
 │       └── setup-bats.sh       # BATS test framework setup
 ├── plugins/
-│   ├── prompt-engineering/     # Prompt engineering plugin
-│   ├── python-plan-optimizer/  # Python plan optimizer plugin
-│   └── native-tools-enforcer/  # Native tools enforcement hook
+│   └── <plugin-name>/          # Each plugin follows this pattern:
 │       ├── .claude-plugin/
-│       │   └── plugin.json
-│       └── hooks/
-│           └── scripts/
-│               └── check-native-tools.sh
+│       │   └── plugin.json     # Plugin manifest
+│       ├── skills/             # Optional: Skills
+│       ├── agents/             # Optional: Agents
+│       ├── hooks/              # Optional: Hooks
+│       └── README.md           # Plugin documentation
 ├── plugin-tests/               # BATS tests for hook scripts
-│   ├── test_helper/
-│   └── native-tools-enforcer/
-├── build-skill-for-web.sh      # Build script for Claude Web
+├── build-skill-for-web.sh      # Creates Claude Web-compatible ZIPs
+├── LICENSE
 └── README.md
 ```
 

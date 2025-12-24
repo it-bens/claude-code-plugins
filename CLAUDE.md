@@ -65,7 +65,6 @@ To create Claude Web-compatible ZIPs that strip `allowed-tools`:
 |------|---------|
 | `plugins/` | Plugin implementations (skills, agents, commands, hooks) |
 | `plugin-tests/` | BATS tests for hook scripts |
-| `docs/` | Source documentation used to create skills (not distributed) |
 | `.claude-plugin/marketplace.json` | Marketplace registry |
 | `.github/scripts/setup-bats.sh` | BATS test framework setup |
 | `build-skill-for-web.sh` | Creates Claude Web ZIPs |
