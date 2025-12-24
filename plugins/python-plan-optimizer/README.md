@@ -7,6 +7,7 @@ Analyze Python code examples in planning documents for quality, design principle
 This plugin provides **read-only analysis** of Python code blocks within planning documents (PLAN.md, design.md, architecture.md). It identifies improvement opportunities using established design principles and modern Python idioms, presenting findings as suggestions for consideration.
 
 **Key Features:**
+- **Project Type Awareness** - Tailors analysis depth for POC, MVP, Private, Enterprise, or Open Source projects
 - **Design Principle Analysis** - Detects SOLID, DRY, KISS, YAGNI violations
 - **Code Smell Detection** - Identifies bloaters, OO abusers, couplers, and more
 - **Modern Python Suggestions** - Recommends type hints, dataclasses, pattern matching
@@ -51,9 +52,48 @@ Check all markdown files in ./docs/ for code smells
 - Identifies cross-document patterns and inconsistencies
 - Reports skipped/failed documents with reasons
 
+## Project Type Awareness
+
+The plugin adjusts analysis depth based on project type. You can specify the type explicitly or let the plugin detect it from your documents.
+
+### Specifying Project Type
+
+```
+Analyze my enterprise project's PLAN.md
+Quick review of this POC code in design.md
+Review my open source library's architecture.md
+```
+
+### Project Types
+
+| Type | Analysis Mode | Use When |
+|------|---------------|----------|
+| **POC** | Critical issues only | Validating an idea; code is throw-away |
+| **MVP** | Critical + High issues | Shipping quickly but building foundation |
+| **Private** | All issues (educational) | Learning, experimentation, personal utility |
+| **Enterprise** | All issues + verification | Production system, team collaboration |
+| **Open Source** | All issues + API focus | Public library consumed by unknown developers |
+
+### What Changes Per Type
+
+| Aspect | POC | MVP | Private | Enterprise | Open Source |
+|--------|-----|-----|---------|------------|-------------|
+| Severities | Critical | Critical, High | All | All | All |
+| Code Smells | Skip | Bloaters only | All | All + consistency | All + API design |
+| Type Hints | Skip | Public API | Suggest | Enforce | **Required** |
+| Docs | Skip | Public API | Suggest | Required | **Required** |
+| Web Verify | Skip | Critical | Optional | **Required** | Required |
+
+**Default:** If no type is specified or detected, `private` mode is used (matches v1.x behavior).
+
 ## Workflow
 
-The plugin follows a 5-phase analysis workflow:
+The plugin follows a 6-phase analysis workflow:
+
+### Phase 0: Project Type Context
+- Determine project type from prompt, document, or user
+- Load appropriate analysis thresholds
+- Configure severity filters and verification requirements
 
 ### Phase 1: Discovery
 - Identify all Python code blocks in the document
@@ -133,11 +173,14 @@ python-plan-optimizer/
 ├── .claude-plugin/
 │   └── plugin.json              # Plugin manifest
 ├── agents/
-│   └── python-plan-optimizer.md # Thin wrapper agent
+│   └── python-plan-optimizer.md # Two-phase orchestrator agent
 ├── skills/
+│   ├── project-type-determination/
+│   │   └── SKILL.md             # Project type detection
 │   └── python-plan-optimization/
 │       ├── SKILL.md             # Core optimization logic
 │       └── references/
+│           ├── project-type-profiles.md
 │           ├── design-principles.md
 │           ├── modern-python.md
 │           ├── code-smells.md
@@ -149,6 +192,7 @@ python-plan-optimizer/
 ## Reference Documentation
 
 Detailed guidance available in:
+- `skills/python-plan-optimization/references/project-type-profiles.md` - Analysis thresholds per project type
 - `skills/python-plan-optimization/references/design-principles.md` - SOLID, DRY, KISS, YAGNI with examples
 - `skills/python-plan-optimization/references/modern-python.md` - Type hints, dataclasses, idioms
 - `skills/python-plan-optimization/references/code-smells.md` - Detection patterns and fixes

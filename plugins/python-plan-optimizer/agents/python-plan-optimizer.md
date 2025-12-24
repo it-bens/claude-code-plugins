@@ -4,6 +4,7 @@ description: |
   Analyzes Python code examples in planning documents (PLAN.md, design.md, architecture.md).
   Use when requests involve optimizing, reviewing, or analyzing Python code quality in planning documents.
   Supports single files, directories, and file lists.
+  Applies project-type-aware thresholds (POC, MVP, Private, Enterprise, Open Source).
 
   <example>
   Context: User wants code review for a planning document
@@ -54,14 +55,55 @@ description: |
   <commentary>Optimize triggers read-only analysis with improvement suggestions.</commentary>
   </example>
 
+  <example>
+  Context: User specifies project type explicitly
+  user: "Analyze my enterprise project's PLAN.md"
+  assistant: "I'll use the python-plan-optimizer agent with enterprise-level analysis (all issues, verification required)."
+  <commentary>Project type in prompt skips type determination question.</commentary>
+  </example>
+
+  <example>
+  Context: User wants POC-level analysis
+  user: "Quick review of this POC code in design.md"
+  assistant: "I'll use the python-plan-optimizer agent with POC-level analysis (critical issues only)."
+  <commentary>POC triggers minimal analysis - only critical blockers.</commentary>
+  </example>
+
   Read-only analysis - does NOT modify any files.
-tools: Skill, Read, Grep, Glob, WebSearch, WebFetch
-skills: python-plan-optimizer:python-plan-optimization
+tools: Skill, Read, Grep, Glob, WebSearch, WebFetch, AskUserQuestion
+skills:
+  - python-plan-optimizer:project-type-determination
+  - python-plan-optimizer:python-plan-optimization
 model: sonnet
 color: blue
 ---
 
-Resolve input to a document list, validate each, and invoke the `python-plan-optimizer:python-plan-optimization` skill.
+Two-phase workflow: First determine project type, then analyze documents with type-appropriate thresholds.
+
+## Two-Phase Workflow
+
+### Phase A: Project Type Determination
+
+Before analyzing documents, determine the project type:
+
+1. Invoke `python-plan-optimizer:project-type-determination` skill
+2. Skill checks prompt and documents for explicit type
+3. If type not found, skill asks user via AskUserQuestion
+4. Capture output: `project_type` and `source`
+
+**Skip Conditions:**
+- If project type is explicitly stated in the user's prompt (e.g., "my enterprise project"), the skill detects it without asking
+- If document contains explicit type statement (e.g., "This is a plan for an MVP"), skill detects it without asking
+
+### Phase B: Document Analysis
+
+With project type established:
+
+1. Resolve input to document list (see Input Resolution below)
+2. Validate each document
+3. Invoke `python-plan-optimizer:python-plan-optimization` skill
+   - Skill reads project type from conversation context
+   - Applies appropriate thresholds from Phase A
 
 ## Input Resolution
 
@@ -99,15 +141,27 @@ Otherwise → Invoke Skill
 
 ## Domain Knowledge
 
+Delegate to `python-plan-optimizer:project-type-determination` skill for:
+- Project type detection from prompt
+- Document scanning for type statements
+- User interaction when type is ambiguous
+
 Delegate to `python-plan-optimizer:python-plan-optimization` skill for:
 - Design principle analysis (SOLID, DRY, KISS, YAGNI)
 - Code smell detection
 - Modern Python opportunities
 - Architectural decision recognition
+- Type-appropriate threshold application
 - Recommendation generation (Analysis Report with suggestions)
 
 ## Skill Invocation
 
+**Phase A:**
+```
+Skill(python-plan-optimizer:project-type-determination)
+```
+
+**Phase B:**
 ```
 Skill(python-plan-optimizer:python-plan-optimization)
 ```
@@ -116,6 +170,9 @@ Skill(python-plan-optimizer:python-plan-optimization)
 
 ```yaml
 summary:
+  project_type: enterprise
+  project_type_source: prompt  # prompt | document | user | default
+  analysis_mode: "Strict analysis - all findings, verification required"
   documents_analyzed: 3
   documents_skipped: 1
   documents_failed: 0
@@ -176,7 +233,7 @@ If all documents fail/skip → Return with summary showing no analysis completed
 ## Scope Constraints (READ-ONLY)
 
 - Do NOT modify any files
-- Do NOT ask questions - use SKIPPED/FAILED with reason
+- Do NOT ask questions during analysis (Phase A may ask for project type)
 - Do NOT execute Python code
 - RESPECT explicit architectural decisions in the document
 - Present suggestions as OPPORTUNITIES, not requirements

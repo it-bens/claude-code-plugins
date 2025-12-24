@@ -7,8 +7,10 @@
 | When you need to... | Consult |
 |---------------------|---------|
 | Understand plugin purpose and usage | `README.md` |
-| Modify agent triggering behavior | `agents/python-plan-optimizer.md` |
+| Modify agent triggering/orchestration | `agents/python-plan-optimizer.md` |
+| Update project type detection | `skills/project-type-determination/SKILL.md` |
 | Update analysis workflow | `skills/python-plan-optimization/SKILL.md` |
+| Modify project type thresholds | `skills/.../references/project-type-profiles.md` |
 | Add or modify design principles | `skills/.../references/design-principles.md` |
 | Update modern Python guidance | `skills/.../references/modern-python.md` |
 | Modify code smell detection | `skills/.../references/code-smells.md` |
@@ -18,13 +20,15 @@
 
 ### `agents/` vs `skills/`
 
-This plugin uses the **thin agent wrapper pattern**:
+This plugin uses the **two-skill orchestration pattern**:
 
-- **`agents/python-plan-optimizer.md`** - Thin wrapper that validates input and delegates to the skill. Contains triggering examples, input validation flowchart, and output contract. Does NOT contain analysis logic.
+- **`agents/python-plan-optimizer.md`** - Orchestrates two skills in sequence. Contains triggering examples, input validation, and output contract. Coordinates Phase A (type determination) and Phase B (analysis).
 
-- **`skills/python-plan-optimization/SKILL.md`** - Core analysis logic with the 5-phase workflow. Contains all domain knowledge about design principles, code smells, and Python modernization.
+- **`skills/project-type-determination/SKILL.md`** - Determines project type from prompt, document, or user. Outputs `project_type` and `source` for the optimization skill to consume.
 
-**Rule:** If modifying analysis behavior, edit the skill. If modifying when/how the agent is triggered, edit the agent.
+- **`skills/python-plan-optimization/SKILL.md`** - Core analysis logic with the 6-phase workflow. Reads project type from context and applies appropriate thresholds.
+
+**Rule:** If modifying analysis behavior, edit the optimization skill. If modifying type detection, edit the determination skill. If modifying orchestration/triggering, edit the agent.
 
 ### `skills/.../references/`
 
@@ -35,6 +39,7 @@ Reference files provide progressive disclosure:
 
 | File | Purpose | When Loaded |
 |------|---------|-------------|
+| `project-type-profiles.md` | Thresholds and filters per project type | During Phase 0 context |
 | `design-principles.md` | Detailed SOLID/DRY/KISS/YAGNI examples | During Phase 2 assessment |
 | `modern-python.md` | Type hints, dataclasses, idioms | During Phase 4 recommendations |
 | `code-smells.md` | Detection patterns and suggestions | During Phase 2 assessment |
@@ -42,44 +47,67 @@ Reference files provide progressive disclosure:
 
 ## Agent-Skill Pattern
 
-The thin agent wrapper pattern separates concerns.
+The two-skill orchestration pattern separates concerns.
 
-**Design principle:** All inputs resolve to a document list (even if it's a list of one). No mode detection needed - the same workflow handles 1 or N documents.
+**Design principle:** Two-phase workflow ensures project type is determined before analysis. All inputs resolve to a document list (even if it's a list of one).
 
 ```
 User Request (file, directory, or list)
     ↓
 AGENT: python-plan-optimizer
-    ├─ Resolve input to document list:
-    │   ├─ Single file → [file]
-    │   ├─ Directory → Glob **/*.md → filter has Python
-    │   └─ File list → parse paths
-    ├─ Validate each file
-    ├─ If no valid documents → Return SKIPPED/FAILED
-    └─ Invoke Skill
-                    ↓
+    │
+    ├─ PHASE A: Project Type Determination
+    │   └─ Invoke Skill: project-type-determination
+    │       ├─ Check prompt for explicit type
+    │       ├─ Scan documents for type statements
+    │       └─ If not found → AskUserQuestion
+    │       Output: project_type, source
+    │
+    └─ PHASE B: Document Analysis
+        ├─ Resolve input to document list:
+        │   ├─ Single file → [file]
+        │   ├─ Directory → Glob **/*.md → filter has Python
+        │   └─ File list → parse paths
+        ├─ Validate each file
+        ├─ If no valid documents → Return SKIPPED/FAILED
+        └─ Invoke Skill: python-plan-optimization
+                        ↓
 SKILL: python-plan-optimization (READ-ONLY)
+    ├─ Phase 0: Load project type from context
     ├─ Phase 1: Discovery (for each document)
-    ├─ Phase 2: Assessment (uses design-principles.md, code-smells.md)
-    ├─ Phase 3: Planning (filter conflicting suggestions)
+    ├─ Phase 2: Assessment (apply type filters)
+    ├─ Phase 3: Planning (filter to included severities)
     ├─ Phase 4: Recommendations (uses modern-python.md)
-    └─ Phase 5: Report (summary + per-document findings)
-                    ↓
+    └─ Phase 5: Report (includes project type header)
+                        ↓
 Output: Analysis Report (NO FILES MODIFIED)
 ```
 
 **Agent responsibilities:**
+- Orchestrate two skills in sequence
 - Resolve input to document list
 - File discovery (for directories)
 - Validate each document
 - Structured output contract
 
-**Skill responsibilities:**
-- All domain knowledge
-- 5-phase workflow (iterates over documents)
-- Report generation
+**Skill responsibilities (project-type-determination):**
+- Detect type from prompt or document
+- Ask user when type is ambiguous
+- Output project_type and source
+
+**Skill responsibilities (python-plan-optimization):**
+- Read project type from context
+- Apply type-appropriate thresholds
+- 6-phase workflow (iterates over documents)
+- Report generation with type header
 
 ## Extending the Plugin
+
+### Modifying Project Type Thresholds
+
+1. Edit `references/project-type-profiles.md`
+2. Adjust severity filters, smell categories, or special checks
+3. Update the threshold table in `python-plan-optimization/SKILL.md` Phase 0 if needed
 
 ### Adding New Design Principles
 
@@ -130,9 +158,15 @@ All recommendations must be framed appropriately:
 - Acknowledge tradeoffs when suggesting changes
 - Respect that the document author may have context we don't
 
-### No Questions Policy
+### Question Policy
 
-The agent uses SKIPPED/FAILED status with reasons instead of asking questions. This enables:
+**Project Type Determination:** May ask user via AskUserQuestion when type cannot be inferred from prompt or document. This is the only interactive component.
+
+**Analysis (all other phases):** Uses SKIPPED/FAILED status with reasons instead of asking questions. This enables:
 - Batch processing of multiple files
 - Predictable automation
 - Clear success/failure outcomes
+
+**Skipping the Question:** To avoid being asked, include project type in your prompt:
+- "Analyze my **enterprise** project's PLAN.md"
+- "Review this **MVP** plan"

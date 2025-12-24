@@ -1,9 +1,10 @@
 ---
 name: python-plan-optimization
-version: 1.4.0
+version: 2.0.0
 description: |
-  5-phase read-only analysis workflow for Python code in markdown documents.
+  6-phase read-only analysis workflow for Python code in markdown documents.
   Detects design principle violations, code smells, and suggests modern Python improvements.
+  Applies project-type-aware thresholds (POC, MVP, Private, Enterprise, Open Source).
   Processes one or more documents, generating per-document analysis with summary.
 allowed-tools: Read, Glob, Grep, WebSearch, WebFetch
 ---
@@ -54,7 +55,41 @@ Analyze Python code in planning documents to identify improvement opportunities 
 - Suggest type wrappers (enums, classes) when SDK already provides `Literal[...]` types, or over-constrain generics breaking valid use cases
 - Cite features from unreleased Python versions
 
-## 5-Phase Workflow
+## 6-Phase Workflow
+
+### Phase 0: Project Type Context
+
+Before analyzing documents, determine the analysis configuration based on project type.
+
+**Check for Project Type in Context:**
+1. Look for `project_type:` in the conversation context (set by project-type-determination skill)
+2. If found → use that type for threshold configuration
+3. If not found → default to `private` (most permissive, matches pre-v2.0.0 behavior)
+
+**Load Profile from `references/project-type-profiles.md`:**
+
+| Type | Severities | Smell Categories | Web Verification | Special Mode |
+|------|------------|------------------|------------------|--------------|
+| poc | Critical only | None | Skip | Minimal report |
+| mvp | Critical, High | Bloaters only | Critical claims | Standard report |
+| private | All | All | Optional | Educational context |
+| enterprise | All | All | **Required** | Cross-document checks |
+| opensource | All | All + API design | Required | Types + docs required |
+
+**Store Configuration:**
+- `include_severities`: List of severities to report
+- `include_smell_categories`: List of smell categories to check
+- `require_web_verification`: Boolean or "critical_only"
+- `educational_mode`: Boolean (explain "why" for each finding)
+- `require_type_hints_public`: Boolean (opensource only)
+- `require_docs_public`: Boolean (opensource only)
+
+**Output for Report Header:**
+```
+project_type: [type]
+project_type_source: [prompt|document|user|default]
+analysis_mode: [description from profile]
+```
 
 ### Phase 1: Discovery
 
@@ -87,7 +122,14 @@ Understand the codebase context and identify explicit decisions.
 
 ### Phase 2: Assessment
 
-Evaluate code against design principles and identify issues.
+Evaluate code against design principles and identify issues. **Apply project type filters from Phase 0.**
+
+**Pre-Assessment: Apply Type Filters**
+
+Before evaluating findings, apply the project type configuration:
+- **Severity Filter**: Only assess issues at or above the threshold (e.g., POC = Critical only)
+- **Smell Category Filter**: Only check included categories (e.g., MVP = Bloaters only)
+- **Open Source Checks**: If `opensource`, also check for missing type hints and docs on public API
 
 **For EACH potential finding, you MUST:**
 1. Quote the exact code (minimum 3 lines, include line numbers)
@@ -125,13 +167,15 @@ See `references/design-principles.md` and `references/code-smells.md` for detail
 
 ### Phase 3: Planning
 
-Prioritize findings and organize recommendations.
+Prioritize findings and organize recommendations. **Apply project type severity filters.**
 
 **Planning Steps:**
 1. Prioritize issues by impact (Critical > High > Medium > Low)
-2. Group related issues that should be addressed together
-3. Filter out suggestions that conflict with explicit architectural decisions
-4. Organize recommendations by code block
+2. **Filter to included severities** based on project type (from Phase 0)
+3. Group related issues that should be addressed together
+4. Filter out suggestions that conflict with explicit architectural decisions
+5. Organize recommendations by code block
+6. **If enterprise/opensource**: Mark findings that need web verification
 
 **Severity Assessment:**
 
@@ -174,12 +218,17 @@ See `references/modern-python.md` for detailed guidance.
 
 ### Phase 5: Report
 
-Generate comprehensive analysis report.
+Generate comprehensive analysis report. **Include project type context in header.**
 
 **Output Format:**
 
 ```markdown
 ## Analysis Report
+
+**Project Type:** [type] (source: [prompt|document|user|default])
+**Analysis Mode:** [description from profile]
+
+---
 
 ### Summary
 
@@ -307,14 +356,6 @@ These terms are NOT interchangeable—verify via WebSearch before making claims:
 
 In-memory caches and locks do NOT provide safety across worker processes (e.g., uvicorn/gunicorn workers).
 
-## When to Ask for Clarification
-
-Use AskUserQuestion when:
-- Analysis scope is ambiguous (single block vs entire document)
-- Multiple valid interpretations of the code exist
-- Architectural decisions are implied but not explicit
-- Original intent of the code is unclear from context
-
 ## Ambiguity Handling
 
 When encountering ambiguous cases:
@@ -328,6 +369,7 @@ When encountering ambiguous cases:
 ### Reference Files
 
 Consult for detailed guidance:
+- **`references/project-type-profiles.md`** - Project type thresholds and filtering configuration
 - **`references/design-principles.md`** - Complete SOLID, DRY, KISS, YAGNI guidance with Python examples
 - **`references/modern-python.md`** - Modern Python features, type hints, dataclasses, idioms
 - **`references/code-smells.md`** - Comprehensive code smell catalog with detection and fixes
@@ -336,10 +378,13 @@ Consult for detailed guidance:
 ## Success Metrics
 
 Analysis succeeds when:
+- **Project type is identified** (from context or defaults to private)
+- **Thresholds are applied** according to project type profile
 - All provided documents are processed (or errors reported)
 - Each document's code blocks are analyzed
 - Explicit architectural decisions are recognized and respected
 - Findings are presented as opportunities, not mandates
 - Suggested alternatives are practical within stated constraints
+- Report includes project type and analysis mode in header
 - Report is comprehensive but actionable
 - **No documents are modified**

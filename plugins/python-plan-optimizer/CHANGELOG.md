@@ -4,6 +4,39 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/), and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [2.0.0] - 2025-12-24
+
+### Added
+
+- **Project Type Awareness** - Analysis depth adjusts based on project type (POC, MVP, Private, Enterprise, Open Source)
+- **New skill: `project-type-determination`** - Detects project type from prompt, document, or user interaction
+- **New reference: `project-type-profiles.md`** - Threshold definitions and filtering configuration per type
+- **Phase 0: Project Type Context** - New workflow phase that loads type-appropriate thresholds
+- **Two-phase agent orchestration** - Agent coordinates type determination before analysis
+- **AskUserQuestion support** - Agent can ask user for project type when not inferrable
+
+### Changed
+
+- **Workflow expanded to 6 phases** - Phase 0 (Project Type Context) added before Discovery
+- **Agent orchestrates two skills** - `project-type-determination` → `python-plan-optimization`
+- **Report header includes project type** - Shows type, source, and analysis mode
+- **Question policy updated** - Type determination may ask; analysis remains non-interactive
+
+### Project Type Analysis Modes
+
+| Type | Severities | Code Smells | Web Verification | Special |
+|------|------------|-------------|------------------|---------|
+| poc | Critical only | Skip | Skip | Minimal report |
+| mvp | Critical, High | Bloaters only | Critical claims | Standard |
+| private | All | All | Optional | Educational context |
+| enterprise | All | All | **Required** | Cross-document checks |
+| opensource | All | All + API | Required | Types + docs required |
+
+**Backward Compatibility:**
+- Default behavior (no type specified) uses `private` profile
+- `private` profile matches pre-v2.0.0 behavior (all suggestions shown)
+- Existing usage patterns continue to work unchanged
+
 ## [1.4.0] - 2025-12-23
 
 ### Changed
