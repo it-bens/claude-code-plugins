@@ -8,8 +8,56 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-skills:
+  discover-skills:
     runs-on: ubuntu-latest
+    outputs:
+      skills: ${{ steps.find-skills.outputs.skills }}
+      has_skills: ${{ steps.find-skills.outputs.has_skills }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+
+      - name: Find web-enabled skills
+        id: find-skills
+        run: |
+          skills_json="[]"
+
+          while IFS= read -r marker_file; do
+            skill_dir=$(dirname "$marker_file")
+            if [ -f "$skill_dir/SKILL.md" ]; then
+              # Extract skill name from frontmatter or use directory name
+              skill_name=$(sed -n '/^---$/,/^---$/p' "$skill_dir/SKILL.md" | grep -E '^name:' | sed 's/^name:[[:space:]]*//' | tr -d '\r' || echo "")
+              if [ -z "$skill_name" ]; then
+                skill_name=$(basename "$skill_dir")
+              fi
+              # Sanitize for artifact name
+              artifact_name=$(echo "$skill_name" | tr '[:upper:]' '[:lower:]' | tr ' ' '-' | tr -cd '[:alnum:]-_')
+
+              skills_json=$(echo "$skills_json" | jq -c --arg path "$skill_dir" --arg name "$artifact_name" '. + [{"path": $path, "name": $name}]')
+              echo "Found skill: $skill_name at $skill_dir"
+            else
+              echo "Warning: .claude-web found but no SKILL.md in $skill_dir"
+            fi
+          done < <(find plugins -name ".claude-web" -type f)
+
+          echo "skills=$skills_json" >> "$GITHUB_OUTPUT"
+
+          if [ "$skills_json" = "[]" ]; then
+            echo "has_skills=false" >> "$GITHUB_OUTPUT"
+            echo "No web-enabled skills found"
+          else
+            echo "has_skills=true" >> "$GITHUB_OUTPUT"
+            echo "Skills to build: $skills_json"
+          fi
+
+  build-skill:
+    needs: discover-skills
+    if: needs.discover-skills.outputs.has_skills == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        skill: ${{ fromJson(needs.discover-skills.outputs.skills) }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
@@ -19,22 +67,15 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y zip coreutils sed
 
-      - name: Build web-enabled skills
+      - name: Build skill ZIP
         run: |
           mkdir -p dist
-          find plugins -name ".claude-web" -type f | while read marker_file; do
-            skill_dir=$(dirname "$marker_file")
-            if [ -f "$skill_dir/SKILL.md" ]; then
-              echo "Building web archive for: $skill_dir"
-              ./build-skill-for-web.sh "$skill_dir" ./dist
-            else
-              echo "Warning: .claude-web found but no SKILL.md in $skill_dir"
-            fi
-          done
+          echo "Building web archive for: ${{ matrix.skill.path }}"
+          ./build-skill-for-web.sh "${{ matrix.skill.path }}" ./dist
 
-      - name: Upload skill ZIPs
+      - name: Upload skill ZIP
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
-          name: skill-zips
+          name: ${{ matrix.skill.name }}
           path: dist/*.zip
           if-no-files-found: error
